@@ -1,9 +1,5 @@
 # schema-checker
 
-[![npm version](https://img.shields.io/npm/v/schema-checker.svg)](https://www.npmjs.com/package/schema-checker)
-[![Build Status](https://github.com/deepthought26/schema-checker/actions/workflows/build.yml/badge.svg)](https://github.com/deepthought26/schema-checker/actions/workflows/build.yml)
-[![License: MIT](https://img.shields.io/npm/l/schema-checker.svg)](LICENSE)
-
 **Runtime validation and type inference for TypeScript.**
 
 `schema-checker` is a strongly typed validation library that models data shapes with function-based validators. Schemas validate at runtime and infer accurate TypeScript types at compile time, so you define your data contract once and use it in both places.
@@ -447,7 +443,3 @@ npm install    # install dependencies and build
 npm test       # type-check, lint, and run tests
 npm run build  # compile to lib/
 ```
-
-## License
-
-[MIT](LICENSE) &copy; 2020 [deepthought26](https://deepthought26.com)
