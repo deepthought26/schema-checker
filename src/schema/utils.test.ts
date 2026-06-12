@@ -125,7 +125,7 @@ describe('schema/utils', () => {
     it('PromiseLike', () => {
       typeCheck<PromiseLike<string>, PromiseLike<string>>('ok');
       typeCheck<PromiseLike<string>, PromiseLike<number>>(
-        Promise.resolve('string'),
+        Promise.resolve('string') as never,
       );
       typeCheck<PromiseLike<string>, Promise<string>>(
         Promise.resolve('string'),
@@ -171,9 +171,8 @@ describe('schema/utils', () => {
         typeCheck<() => [1, 'foo'], () => ['foo', 1]>(() => [1, 'foo']);
 
         typeCheck<() => PromiseLike<number>, () => PromiseLike<number>>('ok');
-        typeCheck<() => PromiseLike<number>, () => PromiseLike<string>>(() =>
-          Promise.resolve(1),
-        );
+        typeCheck<() => PromiseLike<number>, () => PromiseLike<string>>((() =>
+          Promise.resolve(1)) as never);
       });
 
       it('parameters', () => {
