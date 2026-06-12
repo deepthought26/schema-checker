@@ -1,6 +1,6 @@
 {
   "name": "safe-validate",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Runtime validation types for TypeScript.",
   "keywords": [
     "runtime",
@@ -13,8 +13,7 @@
     "composition",
     "interfaces",
     "data",
-    "input",
-    "deepthought26"
+    "input"
   ],
   "scripts": {
     "type-check": "tsc --noEmit",
