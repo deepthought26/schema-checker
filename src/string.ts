@@ -1,0 +1,98 @@
+import { ErrorLike } from './schema/errors';
+import Validator, { ValidatorProxy } from './Validator';
+import FunctionType, { FunctionParameters } from './schema/FunctionType';
+import { regexp, type } from './schema/validations';
+
+export class StringValidator<
+  P extends FunctionParameters = [string],
+> extends Validator<FunctionType<string, P>> {
+  public toLowerCase(): ValidatorProxy<this> {
+    return this.transform((str) => str.toLowerCase());
+  }
+
+  public toUpperCase(): ValidatorProxy<this> {
+    return this.transform((str) => str.toUpperCase());
+  }
+
+  public toLocaleLowerCase(
+    ...input: Parameters<string['toLocaleLowerCase']>
+  ): ValidatorProxy<this> {
+    return this.transform((str) => str.toLocaleLowerCase(...input));
+  }
+
+  public toLocaleUpperCase(
+    ...input: Parameters<string['toLocaleUpperCase']>
+  ): ValidatorProxy<this> {
+    return this.transform((str) => str.toLocaleUpperCase(...input));
+  }
+
+  public normalize(
+    ...input: Parameters<string['normalize']>
+  ): ValidatorProxy<this> {
+    return this.transform((str) => str.normalize(...input));
+  }
+
+  public trim(): ValidatorProxy<this> {
+    return this.transform((str) => str.trim());
+  }
+
+  public truncate(length: number): ValidatorProxy<this> {
+    return this.transform((str) =>
+      str.length > length ? `${str.substring(0, length - 1)}…` : str,
+    );
+  }
+
+  public min(
+    length: number,
+    error?: ErrorLike<[string]>,
+  ): ValidatorProxy<this> {
+    return this.test(
+      (str) => str.length >= length,
+      error ||
+        ((str): RangeError =>
+          new RangeError(
+            `Expect length to be minimum of ${length} characters (actual: ${str.length})`,
+          )),
+    );
+  }
+
+  public max(
+    length: number,
+    error?: ErrorLike<[string]>,
+  ): ValidatorProxy<this> {
+    return this.test(
+      (str) => str.length <= length,
+      error ||
+        ((str): RangeError =>
+          new RangeError(
+            `Expect length to be maximum of ${length} characters (actual: ${str.length})`,
+          )),
+    );
+  }
+
+  public between(
+    minLength: number,
+    maxLength: number,
+    error?: ErrorLike<[string]>,
+  ): ValidatorProxy<this> {
+    return this.test(
+      (str) => str.length >= minLength && str.length <= maxLength,
+      error ||
+        ((str): RangeError =>
+          new RangeError(
+            `Expect length to be between ${minLength} and ${maxLength} characters (actual: ${str.length})`,
+          )),
+    );
+  }
+
+  public regexp(
+    exp: RegExp | string,
+    error?: ErrorLike<[string]>,
+  ): ValidatorProxy<this> {
+    return this.transform(regexp(exp, error));
+  }
+}
+
+const string = new StringValidator(type('string')).proxy();
+
+export default string;
