@@ -7,7 +7,7 @@ import Schema, { string, array } from './';
 describe('index', () => {
   describe('Circular Types', () => {
     // testing issue:
-    // https://github.com/deepthought26/schema-checker/issues/39
+    // https://github.com/deepthought26/safe-validate/issues/39
 
     type Node = {
       name: string;

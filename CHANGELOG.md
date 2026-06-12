@@ -24,10 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of `schema-checker` (formerly Funval).
+- Initial release of `safe-validate` (formerly Funval).
 - Runtime validation types for TypeScript with schema composition.
 - Support for synchronous and asynchronous validators.
 - Built-in types: `string`, `number`, `boolean`, `array`, `object`, `unknown`, and `DateType`.
 
-[1.0.1]: https://github.com/deepthought26/schema-checker/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/deepthought26/schema-checker/releases/tag/v1.0.0
+[1.0.1]: https://github.com/deepthought26/safe-validate/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/deepthought26/safe-validate/releases/tag/v1.0.0

@@ -1,14 +1,14 @@
-# schema-checker
+# safe-validate
 
 **Runtime validation and type inference for TypeScript.**
 
-`schema-checker` is a strongly typed validation library that models data shapes with function-based validators. Schemas validate at runtime and infer accurate TypeScript types at compile time, so you define your data contract once and use it in both places.
+`safe-validate` is a strongly typed validation library that models data shapes with function-based validators. Schemas validate at runtime and infer accurate TypeScript types at compile time, so you define your data contract once and use it in both places.
 
 Previously published as [Funval](https://www.npmjs.com/package/funval).
 
-## Why schema-checker?
+## Why safe-validate?
 
-| schema-checker | Joi (example) |
+| safe-validate | Joi (example) |
 | --- | --- |
 | Types inferred from schemas | Types defined separately |
 | Native TypeScript-style validators (`string`, `number`, `array`) | Joi-specific API |
@@ -16,7 +16,7 @@ Previously published as [Funval](https://www.npmjs.com/package/funval).
 | Zero runtime dependencies | External dependency tree |
 
 ```ts
-// schema-checker
+// safe-validate
 const UserSchema = Schema({
   name: string,
   amount: number,
@@ -63,7 +63,7 @@ type User = {
 ## Installation
 
 ```bash
-npm install schema-checker
+npm install safe-validate
 ```
 
 Requires Node.js 12 or later.
@@ -71,7 +71,7 @@ Requires Node.js 12 or later.
 ## Quick Start
 
 ```ts
-import Schema, { Type, string, number, array } from 'schema-checker';
+import Schema, { Type, string, number, array } from 'safe-validate';
 
 const UserSchema = Schema({
   name: string.trim().normalize().between(3, 40).optional(),
@@ -167,14 +167,14 @@ const UserSchema = Schema({
 const user = await UserSchema({ username: 'test' });
 ```
 
-`schema-checker` propagates async return types through the schema. Accessing a promise result without `await` is flagged by TypeScript.
+`safe-validate` propagates async return types through the schema. Accessing a promise result without `await` is flagged by TypeScript.
 
 ## Validator Chains
 
 Every built-in validator is a callable function with chainable helpers. Chaining runs validators in order and updates the inferred type as transforms are applied.
 
 ```ts
-import { unknown } from 'schema-checker';
+import { unknown } from 'safe-validate';
 
 const validator = unknown.number().gt(0).toFixed(2);
 
@@ -286,7 +286,7 @@ import Schema, {
   boolean,
   array,
   DateType,
-} from 'schema-checker';
+} from 'safe-validate';
 ```
 
 ### `Schema`

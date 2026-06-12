@@ -1,6 +1,6 @@
 {
   "name": "safe-validate",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Runtime validation types for TypeScript.",
   "keywords": [
     "runtime",
@@ -40,13 +40,13 @@
     "postversion": "npm publish"
   },
   "author": "deepthought26",
-  "homepage": "https://github.com/deepthought26/schema-checker#readme",
+  "homepage": "https://github.com/deepthought26/safe-validate#readme",
   "bugs": {
-    "url": "https://github.com/deepthought26/schema-checker/issues"
+    "url": "https://github.com/deepthought26/safe-validate/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepthought26/schema-checker.git"
+    "url": "git+https://github.com/deepthought26/safe-validate.git"
   },
   "license": "MIT",
   "engines": {
