@@ -87,7 +87,10 @@ describe('Schema', () => {
           'foo.bar: Expect length to be minimum of 1 characters (actual: 0)',
         );
         assert.isArray(e.errors);
-        const errors = e.errors!;
+        if (!e.errors?.length) {
+          assert.fail('expected validation errors');
+        }
+        const errors = e.errors;
 
         assert.instanceOf(errors[0].error, RangeError);
         assert.equal(
