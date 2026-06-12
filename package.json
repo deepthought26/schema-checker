@@ -40,13 +40,13 @@
     "postversion": "npm publish"
   },
   "author": "deepthought26",
-  "homepage": "https://github.com/deepthought26/safe-validate#readme",
+  "homepage": "https://github.com/deepthought26/schema-checker#readme",
   "bugs": {
-    "url": "https://github.com/deepthought26/safe-validate/issues"
+    "url": "https://github.com/deepthought26/schema-checker/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepthought26/safe-validate.git"
+    "url": "git+https://github.com/deepthought26/schema-checker.git"
   },
   "license": "MIT",
   "engines": {

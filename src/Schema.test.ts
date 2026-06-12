@@ -40,7 +40,7 @@ describe('Schema', () => {
     });
 
     it('should handle async errors nicely', async () => {
-      // https://github.com/deepthought26/safe-validate/issues/76
+      // https://github.com/deepthought26/schema-checker/issues/76
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async function AvailableUsername(input: string) {
