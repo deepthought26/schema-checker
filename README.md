@@ -1,49 +1,37 @@
-<h1 align="center" style="text-align:center">schema-checker</h1>
+# schema-checker
 
-<h4 align="center">Runtime validation types for TypeScript.</h4>
+[![npm version](https://img.shields.io/npm/v/schema-checker.svg)](https://www.npmjs.com/package/schema-checker)
+[![Build Status](https://github.com/deepthought26/schema-checker/actions/workflows/build.yml/badge.svg)](https://github.com/deepthought26/schema-checker/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/npm/l/schema-checker.svg)](LICENSE)
 
-<p align="center">
-  <a href="https://www.npmjs.org/package/schema-checker">
-    <img src="http://img.shields.io/npm/v/schema-checker.svg" alt="View On NPM">
-  </a>
-  <a href="https://github.com/deepthought26/schema-checker/actions/workflows/build.yml">
-    <img src="https://github.com/deepthought26/schema-checker/actions/workflows/build.yml/badge.svg"
-      alt="Build Status">
-  </a>
-  <a href="https://depfu.com/github/deepthought26/schema-checker?project_id=12857">
-    <img src="https://badges.depfu.com/badges/f49a9b5caba7c3538e1fd9a06a72bca6/overview.svg"
-      alt="Dependency Status">
-  </a>
-  <a href="https://codecov.io/gh/deepthought26/schema-checker">
-    <img src="https://codecov.io/gh/deepthought26/schema-checker/branch/master/graph/badge.svg?token=4YPG4FPM23"
-      alt="Coverage Status" />
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/npm/l/schema-checker.svg" alt="License">
-  </a>
-</p>
-<br>
+**Runtime validation and type inference for TypeScript.**
 
-**schema-checker** (formerly: [Funval](https://www.npmjs.org/package/funval)) is a strongly-typed
-validation library for TypeScript. Using function interfaces, _schema-checker_ knows how to
-transform and validate your data, and automatically generates accurate TypeScript
-interfaces on compile time.
+`schema-checker` is a strongly typed validation library that models data shapes with function-based validators. Schemas validate at runtime and infer accurate TypeScript types at compile time, so you define your data contract once and use it in both places.
 
-#### Using `schema-checker`:
+Previously published as [Funval](https://www.npmjs.com/package/funval).
+
+## Why schema-checker?
+
+| schema-checker | Joi (example) |
+| --- | --- |
+| Types inferred from schemas | Types defined separately |
+| Native TypeScript-style validators (`string`, `number`, `array`) | Joi-specific API |
+| Composable validator chains | Chainable, but separate from TS types |
+| Zero runtime dependencies | External dependency tree |
 
 ```ts
+// schema-checker
 const UserSchema = Schema({
   name: string,
   amount: number,
-  flags: array.of(string).optional();
+  flags: array.of(string).optional(),
 });
 
 type User = Type<typeof UserSchema>;
 ```
 
-#### Equivalent code in `Joi`:
-
 ```ts
+// Joi equivalent
 const UserSchema = Joi.object({
   name: Joi.string().required(),
   amount: Joi.number().required(),
@@ -57,47 +45,34 @@ type User = {
 };
 ```
 
-### Main Features
+## Features
 
-- **Easy to Read** - Uses runtime types like in TypeScript (including `string`, `array`, `unknown`,
-  etc...)
-- **Reduce Duplication** - Create new validator using existing functions in seconds.
-- **TypeScript Validation** - Detect errors during compile time as well.
-- **Function Composition** - Chain multiple validators to generate new types.
-- **Data Transformation** - Combine validation and formatting in the one action.
-- **Asynchronous & Synchronous Support** - Automatically detected promises and async validation.
-- **Zero Dependencies** - Light and compact library.
-- **Pure Javascript** - Also works without TypeScript.
-
-### Sponsored by ❤️
-
-If you like this project, please [consider sponsoring us](https://github.com/sponsors/deepthought26) to help us continue to maintain and improve
-this project.
-
-<br>
+- **Readable schemas** — Validators mirror TypeScript primitives (`string`, `number`, `boolean`, `array`, `unknown`, and more).
+- **Less duplication** — Reuse and compose validators to build new types quickly.
+- **Compile-time safety** — TypeScript catches invalid schema usage before runtime.
+- **Composable chains** — Combine validators to transform and validate data in one pipeline.
+- **Sync and async** — Promise-returning validators are detected automatically.
+- **Zero dependencies** — Small runtime footprint.
+- **Plain JavaScript** — Works in projects with or without TypeScript.
 
 ## Table of Contents
 
-- [Install](#install)
-- [Usage](#usage)
-- [Creating new Types](#creating-new-types)
-- [Validators Chain](#validators-chain)
-- [Documentation](#available-types)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Creating Custom Validators](#creating-custom-validators)
+- [Validator Chains](#validator-chains)
+- [API Reference](#api-reference)
 - [License](#license)
 
-<br>
-
-## Install
-
-#### Node.js:
+## Installation
 
 ```bash
-npm i schema-checker
+npm install schema-checker
 ```
 
-#### Deno:
+Requires Node.js 12 or later.
 
-## Usage
+## Quick Start
 
 ```ts
 import Schema, { Type, string, number, array } from 'schema-checker';
@@ -119,27 +94,18 @@ const validator = UserSchema.destruct();
 
 const [err, user] = validator({
   username: 'john1',
-  // 🚨 TypeScript Error: Type '"unregistered"' is not assignable to type '"active" | "suspended"'.
+  // TypeScript error: '"unregistered"' is not assignable to '"active" | "suspended"'
   status: 'unregistered',
   items: [{ id: 'item-1', amount: 20 }],
 });
 
 console.log(err);
-// 🚨 ValidationError: Expect value to equal "suspended" {
-//   errors: [
-//     {
-//       error: TypeError: Expect value to equal "suspended",
-//       path: ['status']
-//     }
-//   ]
-// }
+// ValidationError: status: Expect value to equal "suspended"
 ```
 
-<br>
+## Creating Custom Validators
 
-## Creating new Types
-
-For example this type will validate email addresses:
+Define a function that accepts `unknown`, validates the input, and returns the typed value:
 
 ```ts
 import * as EmailValidator from 'email-validator';
@@ -149,22 +115,19 @@ function Email(input: unknown): string {
     throw new TypeError(`Invalid email address: "${input}"`);
   }
 
-  return input;
+  return input as string;
 }
 ```
 
-You can use the above validator on schemas as an `Email` type and it will validate inputs in the
-form of `{ email: unknown }` to `{ email: string }` type.
+Use it in a schema:
 
 ```ts
-const UserSchema = {
+const UserSchema = Schema({
   email: Email,
-};
-
-const validator = Schema(UserSchema);
+});
 ```
 
-To create optional types, change the validator arguments to optional as well:
+For optional fields, widen the parameter type:
 
 ```ts
 function OptionalEmail(input?: unknown): string | undefined {
@@ -172,38 +135,23 @@ function OptionalEmail(input?: unknown): string | undefined {
 }
 ```
 
-This will validate inputs in the form of `{ email?: unknown }` to `{ email: string | undefined }`.
+### Using `.transform()`
 
-<br>
-
-### Using Transform
-
-The custom Email validator above will not support [validator chaining](#validators-chain), but we can easily
-fix this by using the [`.transform()` method](#transform).
+Wrap a custom validator with `.transform()` to enable chaining:
 
 ```ts
 const EmailWithValidatorChain = unknown.string.transform(Email);
-```
 
-I can now make use of the validator chain:
-
-```ts
-const UserSchema = {
+const UserSchema = Schema({
   email: EmailWithValidatorChain.optional().max(100),
-};
-
-const validator = Schema(UserSchema);
+});
 ```
-
-<br>
 
 ### Asynchronous Validators
 
-Asynchronous validators are supported by returning a `Promise` (or `PromiseLike`) values:
+Return a `Promise` (or `PromiseLike`) from a validator to enable async validation:
 
 ```ts
-import fetch from 'node-fetch';
-
 async function AvailableUsername(input: string): Promise<string> {
   const res = await fetch(
     `/check-username?username=${encodeURIComponent(input)}`,
@@ -215,32 +163,19 @@ async function AvailableUsername(input: string): Promise<string> {
 
   return input;
 }
-```
 
-_schema-checker_ automatically detects promise and convert the return type of the `Validator` to
-promise as well:
-
-```ts
-const UserSchema = {
+const UserSchema = Schema({
   username: AvailableUsername,
-};
-const validator = Schema(UserSchema);
+});
 
-const user = await validator({ username: 'test' });
+const user = await UserSchema({ username: 'test' });
 ```
 
-Trying to access the return value without resolving it with promise first will detect and alert
-automatically via TypeScript on compile time.
+`schema-checker` propagates async return types through the schema. Accessing a promise result without `await` is flagged by TypeScript.
 
-<br>
+## Validator Chains
 
-## Validators Chain
-
-Every validator in `"schema-checker"` is a validation function that can be called and validate
-any sort of data. In addition, each validator has a few helper methods to chain multiple
-validators together.
-
-For example, check out this use case:
+Every built-in validator is a callable function with chainable helpers. Chaining runs validators in order and updates the inferred type as transforms are applied.
 
 ```ts
 import { unknown } from 'schema-checker';
@@ -250,34 +185,28 @@ const validator = unknown.number().gt(0).toFixed(2);
 console.log(validator('123.4567')); // '123.46'
 ```
 
-You can [see here](#available-types) all the custom chain methods for each type. Please note that
-after calling `toFixed`, the validator no longer returns a `number` but a
-`string` so all the helpers functions available after `toFixed` will be the `string` helpers.
+After `.toFixed()`, the validator returns a `string`, so subsequent chain methods are string helpers.
 
-In addition the type helpers, each validator has those default chain helpers so use:
+### Common chain methods
 
-- [`.equals()`](#equals)
-- [`.test()`](#test)
-- [`.transform()`](#transform)
-- [`.construct()`](#construct)
-- [`.optional()`](#optional)
-- [`.strictOptional()`](#strictOptional)
-- [`.destruct()`](#destruct)
-- [`.error()`](#error)
+| Method | Description |
+| --- | --- |
+| [`.equals()`](#equals) | Assert the value equals a given value |
+| [`.test()`](#test) | Run a custom predicate |
+| [`.transform()`](#transform) | Map the validated value to a new value |
+| [`.construct()`](#construct) | Reshape arguments before validation |
+| [`.optional()`](#optional) | Allow `null` or `undefined` |
+| [`.strictOptional()`](#strictoptional) | Allow only `undefined` |
+| [`.destruct()`](#destruct) | Return `[error, value]` instead of throwing |
+| [`.error()`](#error) | Replace thrown errors with a custom message |
 
-<br>
-
-##### `.equals()`
-
-Verify the return value equals to the given value.
+#### `.equals()`
 
 ```ts
 const validator = boolean.equals(true);
 ```
 
-##### `.test()`
-
-Verify the return value pass the given test function.
+#### `.test()`
 
 ```ts
 import * as EmailValidator from 'email-validator';
@@ -285,10 +214,7 @@ import * as EmailValidator from 'email-validator';
 const validator = string.test(EmailValidator.validate, 'Invalid email address');
 ```
 
-##### `.transform()`
-
-Transform the return value to a new value or throw to fail the validation process. The return
-value can be any value, including different types.
+#### `.transform()`
 
 ```ts
 const validator = number.transform((x): number => {
@@ -300,21 +226,16 @@ const validator = number.transform((x): number => {
 });
 ```
 
-##### `.construct()`
+#### `.construct()`
 
-Similar to [`.transform()`](#transform) but less common. This helper is useful when you want to
-change the validator input before validating it. The returning value of the construct function
-should always return an array as this array will pass to the original validator input as arguments.
+Reshape validator arguments before the underlying validator runs. The construct function must return an array of arguments.
 
 ```ts
 const validator = number.gt(1).construct((x: number, y: number) => [x + y]);
-validators(x, y); // x + y
+validator(1, 2); // validates 3
 ```
 
-##### `.optional()`
-
-Will convert the validator to an optional by allowing `undefined` or `null` values.
-This is very useful for parsing when creating optional properties on a schema.
+#### `.optional()`
 
 ```ts
 const validator = Schema({
@@ -323,22 +244,20 @@ const validator = Schema({
 });
 ```
 
-##### `.strictOptional()`
+#### `.strictOptional()`
 
-Same as `.optional()` but allows only `undefined` values.
+Same as `.optional()`, but only `undefined` is accepted (not `null`).
 
 ```ts
 const validator = Schema({
   name: string.trim().min(1),
-  address: string.trim().optional(),
+  address: string.trim().strictOptional(),
 });
 ```
 
-##### `.destruct()`
+#### `.destruct()`
 
-Use this as the final helper on the chain. It will catch any validation error and spread it to a
-2-arguments array with an error and possible value on success. Useful if you don't like catching
-errors.
+Return a tuple `[error, value]` instead of throwing on validation failure.
 
 ```ts
 const validator = Schema({
@@ -348,34 +267,35 @@ const validator = Schema({
 const [err, user] = validator(req.body);
 ```
 
-##### `.error()`
+#### `.error()`
 
-Will catch any error and replace it with your custom error instead. You can pass a `string`,
-`ValidationError` or a `function` that will generate an error for you. Notice that on most cases you
-will not need to use this helpers, as most validation helpers has an optional `error` param with the
-same functionality.
+Replace validation errors with a custom message, `ValidationError`, or error factory.
 
 ```ts
 const validator = Schema({
   name: string.error('expect input to be string'),
-  amount: number.gt(0, (val) => `${val} is not positive amount`);
+  amount: number.gt(0, (val) => `${val} is not a positive amount`),
 });
 ```
 
-<br>
+## API Reference
 
-## Available Types
+Import the primitives you need:
 
-It's useful to import the following native types when building custom schemas.
-Click on each type to see some validation examples.
-
-**`import`** [`Schema`](#schema), `{` [`unknown`](#unknown), [`string`](#string), [`number`](#number), [`boolean`](#boolean), [`array`](#array), [`DateType`](#datetype) `}` **`from`** `'schema-checker';`
-
-<br>
+```ts
+import Schema, {
+  unknown,
+  string,
+  number,
+  boolean,
+  array,
+  DateType,
+} from 'schema-checker';
+```
 
 ### `Schema`
 
-Create a validator from schema object, values or function validators.
+Create a validator from a schema object, literal values, or function validators.
 
 ```ts
 const validator = Schema(
@@ -387,10 +307,7 @@ const validator = Schema(
 );
 ```
 
-##### Strict mode
-
-By default, the schema validator will ignore all properties that aren't exist on the schema. If
-you want to throw an error instead you can toggle the strict mode on.
+**Strict mode** — Reject properties not defined on the schema:
 
 ```ts
 const validator = Schema(
@@ -402,30 +319,21 @@ const validator = Schema(
 );
 ```
 
-##### `Schema.either`
-
-Works as OR switch. Create a validator from multiple function validators or schema objects.
+**`Schema.either`** — Validate one of several shapes (OR):
 
 ```ts
 const validator = Schema.either({ foo: string }, { bar: number });
-// validate: { foo: string; } | { bar: number; }
+// { foo: string } | { bar: number }
 ```
 
-##### `Schema.merge`
-
-Works as AND switch. Create a validator from multiple function validators or schema objects.
+**`Schema.merge`** — Merge multiple schemas (AND):
 
 ```ts
 const validator = Schema.merge({ foo: string }, { bar: number });
-// validate: {
-//   foo: string;
-//   bar: number;
-// }
+// { foo: string; bar: number }
 ```
 
-##### `Schema.enum`
-
-Create a validator from TypeScript enum.
+**`Schema.enum`** — Validate against a TypeScript enum:
 
 ```ts
 enum Status {
@@ -436,450 +344,110 @@ enum Status {
 const validator = Schema.enum(Status, 'Invalid status');
 ```
 
-##### `Schema.record`
-
-Create a `Record<key, value>` validator.
+**`Schema.record`** — Validate a `Record<key, value>`:
 
 ```ts
 const validator = Schema.record(string.regexp(/^[a-z]+$/), number);
 ```
 
-<br>
-
 ### `unknown`
 
-Accept any `unknown` value:
+Accept any value and coerce or validate it:
 
 ```ts
-const validator = Schema({
-  data: unknown,
-});
+const validator = Schema({ data: unknown });
 ```
 
-##### `unknown.schema()`
-
-Accept any value as an input and try to convert it the given schema:
-
-```ts
-const validator = unknown.schema({
-  foo: string.trim(),
-});
-```
-
-##### `unknown.object()`
-
-Accept any value as an input and try to convert it to an object:
-
-```ts
-const validator = unknown.object('Expect data to be an object');
-```
-
-##### `unknown.array()`
-
-Accept any value as an input and try to convert it to an array:
-
-```ts
-const validator = unknown.array().min(1).of(boolean);
-```
-
-##### `unknown.string()`
-
-Accept any value as an input and try to convert it to a string:
+| Method | Description |
+| --- | --- |
+| `unknown.schema()` | Coerce to a nested schema |
+| `unknown.object()` | Coerce to an object |
+| `unknown.array()` | Coerce to an array |
+| `unknown.string()` | Coerce to a string |
+| `unknown.number()` | Coerce to a number |
+| `unknown.boolean()` | Coerce to a boolean |
+| `unknown.date()` | Coerce to a `Date` |
+| `unknown.enum()` | Coerce to an enum value |
+| `unknown.record()` | Coerce to a record |
 
 ```ts
 const validator = unknown.string('Expect data to be string').toUpperCase();
-
-// will accept: `{ data: 1 }` and convert it to `{ data: '1' }`
-// will throw: `{ data: null }`
+// accepts { data: 1 } and converts to { data: '1' }
 ```
-
-##### `unknown.number()`
-
-Accept any value as an input and try to convert it to a number:
-
-```ts
-const validator = unknown.number('Expect data to be number').gt(0);
-```
-
-##### `unknown.boolean()`
-
-Accept any value as an input and try to convert it to a boolean:
-
-```ts
-const validator = unknown.boolean('Expect data to be boolean').equals(true);
-```
-
-##### `unknown.date()`
-
-Accept any value as an input and try to convert it to a date:
-
-```ts
-const validator = unknown
-  .date('Expect data to be date')
-  .equals('1970-01-01T00:00:00.050Z');
-```
-
-##### `unknown.enum()`
-
-Accept any value as an input and try to convert it to the given enum:
-
-```ts
-enum Status {
-  OK,
-  Invalid,
-}
-
-const validator = unknown.enum(Status);
-```
-
-##### `unknown.record()`
-
-Accept any value as an input and try to convert it to a `Record<key, value>`:
-
-```ts
-const validator = unknown.record(string, number);
-```
-
-<br>
 
 ### `string`
 
-Accept only string values (including empty strings).
+Accept string values (including empty strings).
 
-```ts
-const validator = Schema({
-  content: string,
-});
-```
-
-##### `string.toLowerCase()`
-
-Accept string and convert it to lower case.
-
-```ts
-const validator = string.toLowerCase().trim();
-```
-
-##### `string.toUpperCase()`
-
-Accept string and convert it to upper case.
-
-```ts
-const validator = string.toUpperCase().trim();
-```
-
-##### `string.toLocaleLowerCase()`
-
-Accept string and convert it to local lower case.
-
-```ts
-const validator = string.toLocaleLowerCase('en-US').trim();
-```
-
-##### `string.toLocaleUpperCase()`
-
-Accept string and convert it to local upper case.
-
-```ts
-const validator = string.toLocaleUpperCase('en-US').trim();
-```
-
-##### `string.trim()`
-
-Accept string and trim it.
-
-```ts
-const validator = string.trim();
-```
-
-##### `string.truncate()`
-
-Truncate a string to a given length with ellipsis (`…`) to the end. If the string below the given
-limit the original string is return.
-
-```ts
-const validator = string.truncate(100);
-```
-
-##### `string.normalize()`
-
-Accept string and normalize it.
-
-```ts
-const validator = string.normalize();
-```
-
-##### `string.min()`
-
-Accept string with minimum given length.
-
-```ts
-const validator = string.min(2).toLowerCase();
-```
-
-##### `string.max()`
-
-Accept string with maximum given length.
-
-```ts
-const validator = string.max(10).toUpperCase();
-```
-
-##### `string.between()`
-
-Accept string within the given length range.
-
-```ts
-const validator = string.between(2, 10).trim();
-```
-
-##### `string.regexp()`
-
-Accept only strings that match the given regular expression.
-
-```ts
-const validator = string.regexp(/^Hello/).trim();
-```
-
-<br>
+| Method | Description |
+| --- | --- |
+| `toLowerCase()` / `toUpperCase()` | Change case |
+| `toLocaleLowerCase()` / `toLocaleUpperCase()` | Locale-aware case change |
+| `trim()` | Remove leading and trailing whitespace |
+| `truncate(n)` | Truncate with ellipsis |
+| `normalize()` | Unicode normalization |
+| `min(n)` / `max(n)` / `between(min, max)` | Length constraints |
+| `regexp(pattern)` | Match a regular expression |
 
 ### `number`
 
-Accept only number type values.
+Accept numeric values.
 
-```ts
-const validator = Schema({
-  amount: number,
-});
-```
-
-##### `number.float()`
-
-Accept only floating numbers (throws on NaN or non-finite values).
-
-```ts
-const validator = number.float().gt(0);
-```
-
-##### `number.integer()`
-
-Accept only integer numbers.
-
-```ts
-const validator = number.integer().gt(0);
-```
-
-##### `number.toExponential()`
-
-Accept number and convert it to exponential format string.
-
-```ts
-const validator = number.toExponential().toUpperCase();
-```
-
-##### `number.toFixed()`
-
-Accept number and convert it to fixed format string.
-
-```ts
-const validator = number.toFixed(3);
-```
-
-##### `number.toLocaleString()`
-
-Accept number and convert it to locale string.
-
-```ts
-const validator = number.toLocaleString('en-US');
-```
-
-##### `number.toPrecision()`
-
-Accept number and convert it to precision string.
-
-```ts
-const validator = number.toPrecision(2);
-```
-
-##### `number.toString()`
-
-Accept number and convert it to string.
-
-```ts
-const validator = number.toString(16).toUpperCase();
-```
-
-##### `number.gte()`
-
-Accept number that greater or equal than the boundary given.
-
-```ts
-const validator = number.gte(1.5);
-```
-
-##### `number.lte()`
-
-Accept number that lower or equal than the boundary given.
-
-```ts
-const validator = number.lte(10.5);
-```
-
-##### `number.gt()`
-
-Accept number that greater than the boundary given.
-
-```ts
-const validator = number.gt(1.5);
-```
-
-##### `number.lt()`
-
-Accept number that lower than the boundary given.
-
-```ts
-const validator = number.lt(10.5);
-```
-
-##### `number.between()`
-
-Accept number between the given boundaries.
-
-```ts
-const validator = number.between(0, 1);
-```
-
-<br>
+| Method | Description |
+| --- | --- |
+| `float()` | Accept floats (reject NaN and non-finite values) |
+| `integer()` | Accept integers only |
+| `toExponential()` / `toFixed()` / `toPrecision()` | Format as string |
+| `toLocaleString()` | Locale-formatted string |
+| `toString(radix?)` | Convert to string |
+| `gte()` / `lte()` / `gt()` / `lt()` / `between()` | Range constraints |
 
 ### `boolean`
 
-Accept only boolean type values.
+Accept boolean values.
 
 ```ts
-const validator = Schema({
-  agree: boolean,
-});
+const validator = Schema({ agree: boolean });
 ```
-
-<br>
 
 ### `array`
 
-Accept only array type values.
+Accept array values.
 
-````ts
-const validator = Schema({
-  agree: array
-});
-
-##### `array.of()`
-
-Accept only array with given items.
+| Method | Description |
+| --- | --- |
+| `of(schema)` | Validate each element |
+| `min(n)` / `max(n)` / `between(min, max)` | Length constraints |
 
 ```ts
-const numbers = array.of(number); // numbers[]
-const tuple = array.of(number).between(1, 2); // [number, number?]
-const objects = array.of({ foo: number }); // { foo: number }[]
-const enums = array.of(Schema.enum(Status); // Status[]
-````
-
-##### `array.min()`
-
-Accept only array with minimum given items.
-
-```ts
-const validator = array.min(2);
+const numbers = array.of(number);
+const tuple = array.of(number).between(1, 2);
+const objects = array.of({ foo: number });
+const enums = array.of(Schema.enum(Status));
 ```
-
-##### `array.max()`
-
-Accept only array with maximum given items.
-
-```ts
-const validator = array.max(10);
-```
-
-##### `array.between()`
-
-Accept only array with minimum and maximum count of items.
-
-```ts
-const validator = array.between(2, 10);
-```
-
-<br>
 
 ### `DateType`
 
-Accept only instances of `Date`.
+Accept `Date` instances.
+
+| Method | Description |
+| --- | --- |
+| `toISOString()` | Convert to ISO string |
+| `getTime()` | Convert to timestamp |
+| `gte()` / `lte()` / `gt()` / `lt()` / `between()` | Date range constraints |
 
 ```ts
-const validator = Schema({
-  eventTime: DateType,
-});
+const validator = Schema({ eventTime: DateType });
 ```
 
-##### `DateType.toISOString()`
+## Development
 
-Accept Date and convert it to ISO date string.
-
-```ts
-const validator = DateType.toISOString();
+```bash
+npm install    # install dependencies and build
+npm test       # type-check, lint, and run tests
+npm run build  # compile to lib/
 ```
-
-##### `DateType.getTime()`
-
-Accept Date and convert it to a timestamp.
-
-```ts
-const validator = DateType.getTime().gt(100);
-```
-
-##### `DateType.gte()`
-
-Accept Date that greater or equal than the boundary given.
-
-```ts
-const validator = DateType.gte(new Date('2020-10-01T10:00:00.000Z'));
-```
-
-##### `DateType.lte()`
-
-Accept Date that lower or equal than the boundary given.
-
-```ts
-const validator = DateType.lte(new Date('2020-10-01T10:00:00.000Z'));
-```
-
-##### `DateType.gt()`
-
-Accept Date that greater than the boundary given.
-
-```ts
-const validator = DateType.gt(new Date('2020-10-01T10:00:00.000Z'));
-```
-
-##### `DateType.lt()`
-
-Accept Date that lower than the boundary given.
-
-```ts
-const validator = DateType.lt(new Date('2020-10-01T10:00:00.000Z'));
-```
-
-##### `DateType.between()`
-
-Accept Date between the given boundaries.
-
-```ts
-const validator = DateType.between(
-  new Date('2020-09-01T10:00:00.000Z'),
-  new Date('2020-10-01T10:00:00.000Z'),
-);
-```
-
-<br>
 
 ## License
 
-[MIT](LICENSE) license &copy; 2020 [deepthought26](https://deepthought26.com)
+[MIT](LICENSE) &copy; 2020 [deepthought26](https://deepthought26.com)
