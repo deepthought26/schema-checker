@@ -1,5 +1,5 @@
 {
-  "name": "schema-validate",
+  "name": "safe-validate",
   "version": "1.0.1",
   "description": "Runtime validation types for TypeScript.",
   "keywords": [
