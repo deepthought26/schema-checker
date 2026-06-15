@@ -1,6 +1,6 @@
 {
   "name": "safe-validate",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Runtime validation types for TypeScript.",
   "keywords": [
     "runtime",
@@ -51,7 +51,7 @@
   "engines": {
     "node": ">=12"
   },
-  "sideEffects": false,
+  "sideEffects": ["./lib/bootstrap.js", "./lib/index.js", "./index.mjs"],
   "main": "lib/index",
   "module": "lib/index",
   "types": "lib/index",

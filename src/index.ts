@@ -6,6 +6,7 @@ import number from './number';
 import boolean from './boolean';
 import Schema from './Schema';
 import DateType from './DateType';
+import './schema/bootstrap';
 import {
   SchemaResolveType,
   SchemaParameters,

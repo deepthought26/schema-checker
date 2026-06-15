@@ -1,4 +1,4 @@
-import { Schema } from "./lib/index.js";
+import './lib/bootstrap.js';
+import { Schema } from './lib/index.js';
 export * from './lib/index.js';
-
 export default Schema;
